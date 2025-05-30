@@ -27,6 +27,10 @@ const HazardSchema = new mongoose.Schema(
     responsiblePerson: { type: String, required: true },
     controlVerification: {
       type: String,
+           
+    },
+    controlMeasure: {
+      type: String,
       
       required: true,
     },
