@@ -8,7 +8,7 @@ const TasksManagement = require("../Model/TasksManagementModel");
 
 // CREATE Hazard
 const createHazard = asyncHandler(async (req, res) => {
-  const { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, status, implementationDate  } = req.body;
+  const { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, controlMeasure, status, implementationDate  } = req.body;
 
 
 
@@ -20,6 +20,7 @@ const createHazard = asyncHandler(async (req, res) => {
     additionalNotes,
     responsiblePerson,
     controlVerification,
+    controlMeasure,
     status,
     implementationDate
 
@@ -87,12 +88,12 @@ const getSingleHazard = async (req, res) => {
 // UPDATE Hazard
 const updateHazard = async (req, res) => {
   const { id } = req.params;
-  const { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, status, implementationDate } = req.body;
+  const { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, controlMeasure, status, implementationDate } = req.body;
 
   try {
     const updatedHazard = await Hazard.findByIdAndUpdate(
       id,
-      { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, status, implementationDate },
+      { hazardDescription, severityLevel, likelihood, additionalNotes, responsiblePerson, controlVerification, controlMeasure, status, implementationDate },
       { new: true } // Return the updated document
     );
 
