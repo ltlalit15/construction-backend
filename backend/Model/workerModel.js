@@ -45,6 +45,9 @@ const workerSchema = new mongoose.Schema(
     accessLevel: {
       type: String,
     },
+
+    workeractive: {type: String},
+    workerinactive: {type: String},
     image: []
   },
   {
