@@ -18,6 +18,7 @@ const inductionSchema = new mongoose.Schema({
     complyOperatingHours: { type: Boolean },
     emergencyProcedures: { type: Boolean }
   },
+  status: { type: String},
   image: [],
 
 
