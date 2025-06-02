@@ -26,7 +26,9 @@ const createWorker = asyncHandler(async (req, res) => {
       accessHours,
       supervisorAssignment,
       workArea,
-      accessLevel
+      accessLevel,
+       workeractive,
+      workerinactive
     } = req.body;
 
     let image = [];
@@ -62,6 +64,9 @@ const createWorker = asyncHandler(async (req, res) => {
       supervisorAssignment,
       workArea,
       accessLevel,
+      workeractive,
+      workerinactive,
+
       image
     });
 
@@ -127,7 +132,9 @@ const updateWorker = asyncHandler(async (req, res) => {
       accessHours,
       supervisorAssignment,
       workArea,
-      accessLevel
+      accessLevel,
+       workeractive,
+      workerinactive
     } = req.body;
 
     let image = req.body.image || [];
@@ -165,6 +172,8 @@ const updateWorker = asyncHandler(async (req, res) => {
         supervisorAssignment,
         workArea,
         accessLevel,
+        workeractive,
+        workerinactive,
         image
       },
       { new: true }
