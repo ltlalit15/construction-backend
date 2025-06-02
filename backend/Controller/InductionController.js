@@ -23,6 +23,7 @@ cloudinary.config({
       inductionDate,
       accessStartTime,
       accessEndTime,
+      status
       //acknowledgements,
     } = req.body;
 
@@ -65,6 +66,7 @@ cloudinary.config({
         accessStartTime,
         accessEndTime,
         acknowledgements,
+        status,
         image: fileUrl ? [fileUrl] : [], 
       });
       await newInduction.save();
@@ -142,7 +144,9 @@ cloudinary.config({
       siteSupervisor, 
       inductionDate, 
       accessStartTime,
-      accessEndTime
+      accessEndTime,
+      workeractive,
+      workerinactive
 
       //acknowledgements 
     } = req.body;
@@ -196,6 +200,8 @@ cloudinary.config({
           accessEndTime,
 
           acknowledgements,
+          workeractive,
+          workerinactive,
           image: fileUrl ? [fileUrl] : [], // Update image if a new one is uploaded
         },
         { new: true } // Return the updated document
