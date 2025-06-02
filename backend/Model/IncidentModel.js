@@ -28,6 +28,13 @@ const incidentSchema = new mongoose.Schema({
   fireCause: { type: String },
   fireDamage: { type: String },
 
+  title: { type: String},
+
+  ReportedBy: {type: String},
+
+  status: {type: String}
+
+
 
 
 }, { timestamps: true });
