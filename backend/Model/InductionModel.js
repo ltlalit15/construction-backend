@@ -10,7 +10,7 @@ const inductionSchema = new mongoose.Schema({
   siteLocation: { type: String, required: true },
   siteSupervisor: { type: String, required: true },
   inductionDate: { type: Date, required: true },
-  inductionValidityPeriod: { type: String, required: true },
+  //inductionValidityPeriod: { type: String, required: true },
   accessStartTime: { type: String },
   accessEndTime: { type: String },
   acknowledgements: {
