@@ -33,7 +33,10 @@ cloudinary.config({
       damageDetails,
       environmentalImpact,
       fireCause,
-      fireDamage 
+      fireDamage,
+       title,
+      ReportedBy,
+      status 
     } = req.body;
   
     let imageUrl = '';  // Variable to store the URL of the uploaded image
@@ -67,6 +70,9 @@ cloudinary.config({
         injuredPersonJobTitle,
         injuryNature,
         affectedBodyParts,
+        title,
+        ReportedBy,
+        status
       }),
 
       ...(incidentType === 'Property Damage' && {
@@ -170,6 +176,9 @@ cloudinary.config({
     environmentalImpact,
     fireCause,
     fireDamage,
+    title,
+    ReportedBy,
+    status
   } = req.body;
 
   try {
@@ -205,6 +214,9 @@ cloudinary.config({
       severityLevel,
       witnesses: typeof witnesses === 'string' ? witnesses.split(',').map(w => w.trim()) : witnesses,
       immediateActions,
+      title,
+      ReportedBy,
+      status,
       image: imageUrls,
     };
 
