@@ -98,7 +98,9 @@ routerapi.use('/api/inductionTemplate', require('./Router/inductionTemplateRoute
 
 routerapi.use('/api/hazardTemplate', require('./Router/hazardTemplateRouter'));
 
+routerapi.use('/api/safetydashbaord', require('./Router/safetyDashboardRouter'));
 
+routerapi.use('/api/alertsNotification', require('./Router/alertsNotificationRouter'));
 
 // <<<<<<< HEAD
 // // // Superadmin 
