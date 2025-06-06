@@ -66,38 +66,99 @@ const Projects = require("../Model/projectsModel");
 const TasksManagement = require("../Model/TasksManagementModel");
 const Incident = require("../Model/IncidentModel");
 
-// Dashboard controller
 const getDashboardData = asyncHandler(async (req, res) => {
   try {
-    const activeProjects = await Projects.countDocuments({ status: 'In Progress' });
-    const thisWeekProjects = await Projects.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }});
+    const now = new Date();
+    const oneDayAgo = new Date(now - 1 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const openTasks = await TasksManagement.countDocuments({ status: 'open' });
-    const highPriorityTasks = await TasksManagement.countDocuments({ status: 'open', priority: 'high' });
+    // ========== ACTIVE PROJECTS ==========
+    const activeProjects = await Projects.countDocuments({ status: /in progress/i });
+    const lastDayActiveProjects = await Projects.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneDayAgo },
+    });
+    const lastWeekActiveProjects = await Projects.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneWeekAgo },
+    });
+    const lastMonthActiveProjects = await Projects.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneMonthAgo },
+    });
 
-    const safetyIncidents = await Incident.countDocuments();
+    // ========== OVERDUE PROJECTS (NOT COMPLETED) ==========
+    const overdueProjects = await Projects.find({
+      endDate: { $lt: now },
+      status: { $not: /^Completed$/i },
+    });
+
+    // ========== OPEN TASKS ==========
+    const openTasks = await TasksManagement.countDocuments({ status: /in progress/i });
+    const tasksLastDay = await TasksManagement.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneDayAgo },
+    });
+    const tasksLastWeek = await TasksManagement.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneWeekAgo },
+    });
+    const tasksLastMonth = await TasksManagement.countDocuments({
+      status: /in progress/i,
+      createdAt: { $gte: oneMonthAgo },
+    });
+
+    const highPriorityTasks = await TasksManagement.countDocuments({
+      status: /in progress/i,
+      priority: 'high',
+    });
+
+    // ========== INCIDENTS ==========
+    const totalIncidents = await Incident.countDocuments();
     const criticalIncidents = await Incident.countDocuments({ severity: 'high' });
+    const incidentsLastDay = await Incident.countDocuments({ createdAt: { $gte: oneDayAgo } });
+    const incidentsLastWeek = await Incident.countDocuments({ createdAt: { $gte: oneWeekAgo } });
+    const incidentsLastMonth = await Incident.countDocuments({ createdAt: { $gte: oneMonthAgo } });
 
-    const monthlyReports = await Incident.countDocuments({ createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }});
+    const monthlyReports = await Incident.countDocuments({ createdAt: { $gte: startOfMonth } });
     const pendingReports = await Incident.countDocuments({ reportStatus: 'pending' });
 
-    const project = await Projects.findOne({ status: 'In Progress' }).sort({ startDate: -1 });
+    // ========== LATEST ACTIVE PROJECT ==========
+    const latestProject = await Projects.findOne({ status: /in progress/i }).sort({ startDate: -1 });
 
+    // ========== RESPONSE ==========
     res.status(200).json({
       success: true,
       message: "Dashboard data fetched successfully",
       data: {
         metrics: {
           activeProjects,
-          thisWeekProjects,
+          lastDayActiveProjects,
+          lastWeekActiveProjects,
+          lastMonthActiveProjects,
+
+          overdueProjectsCount: overdueProjects.length,
+
           openTasks,
+          tasksLastDay,
+          tasksLastWeek,
+          tasksLastMonth,
+
           highPriorityTasks,
-          safetyIncidents,
+
+          totalIncidents,
           criticalIncidents,
+          incidentsLastDay,
+          incidentsLastWeek,
+          incidentsLastMonth,
+
           monthlyReports,
-          pendingReports,
+          pendingReports
         },
-        project
+        project: latestProject,
+        overdueProjectsList: overdueProjects // full list if needed in frontend
       }
     });
   } catch (err) {
