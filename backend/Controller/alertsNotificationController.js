@@ -48,7 +48,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'SWMS',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...inductionAlerts.map(item => {
@@ -57,16 +58,18 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'Induction',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...incidentAlerts.map(item => {
-        const alertMessage = `Incident status changed to ${item.status}: ${item.name}`;
+        const alertMessage = `Incident status changed to ${item.status}`;
         logNotification('Incident', alertMessage);  // Log Notification for Incident status
         return {
           type: 'Incident',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...siteEntryAlerts.map(item => {
@@ -75,7 +78,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'SiteEntry',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...siteReviewAlerts.map(item => {
@@ -84,7 +88,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'SiteReview',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...defectAlerts.map(item => {
@@ -93,7 +98,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'Defect',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...announcementAlerts.map(item => {
@@ -102,7 +108,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'Announcement',
           message: alertMessage,
-          timestamp: item.createdAt
+          timestamp: item.createdAt,
+           id: item._id 
         };
       }),
       ...rfiAlerts.map(item => {
@@ -111,7 +118,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'RFI',
           message: alertMessage,
-          timestamp: item.createdAt
+          timestamp: item.createdAt,
+           id: item._id 
         };
       }),
       ...toolboxTalkAlerts.map(item => {
@@ -120,7 +128,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'ToolboxTalk',
           message: alertMessage,
-          timestamp: item.createdAt
+          timestamp: item.createdAt,
+           id: item._id 
         };
       }),
       ...projectAlerts.map(item => {
@@ -129,7 +138,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'Project',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       }),
       ...documentAlerts.map(item => {
@@ -138,7 +148,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'Document',
           message: alertMessage,
-          timestamp: item.createdAt
+          timestamp: item.createdAt,
+           id: item._id 
         };
       }),
       ...taskManagementAlerts.map(item => {
@@ -147,7 +158,8 @@ const getRecentAlerts = asyncHandler(async (req, res) => {
         return {
           type: 'TaskManagement',
           message: alertMessage,
-          timestamp: item.updatedAt
+          timestamp: item.updatedAt,
+           id: item._id 
         };
       })
     ];
