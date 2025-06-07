@@ -3,9 +3,9 @@ const ppe = require("../Model/ppeModel");
 
 // CREATE PPE Template
 const createPpeTemplate = asyncHandler(async (req, res) => {
-  const { taskName, description, requiredPPE, assignedTo } = req.body;
+  const { taskName, description, requiredPPE, assignedTo, status } = req.body;
 
-  if (!taskName || !description || !assignedTo) {
+  if (!taskName || !description || !assignedTo || !status) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
