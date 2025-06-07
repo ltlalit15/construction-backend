@@ -23,6 +23,7 @@ const announcementSchema = new mongoose.Schema({
     type: String,
     required: true,  // Message is required
   },
+   status: {type: String},
 
   image: [],
 
