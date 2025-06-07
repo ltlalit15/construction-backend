@@ -21,7 +21,8 @@ const createPlantAuditReport = asyncHandler(async (req, res) => {
       odometerReading,
       nextServiceDue,
       checklist,
-      operatorSignature
+      operatorSignature,
+      status
     } = req.body;
 
     // Validate plantType ID exists
@@ -64,6 +65,7 @@ const createPlantAuditReport = asyncHandler(async (req, res) => {
       checklist: checklistItems,
       image: imageUrls,       // <--- assign all images here
       operatorSignature,
+      status
       
     });
 
