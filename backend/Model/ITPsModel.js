@@ -42,11 +42,14 @@ const ITPsSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  
 
   reviewerComments: {
     type: String,
     required: true,
   },
+
+   status: {type: String},
 
   
   image: [],
