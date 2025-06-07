@@ -9,7 +9,7 @@ const toolboxTalkSchema = new mongoose.Schema({
   presenter: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   participants: [{ type: String }], 
   description: { type: String },
-  status: { type: String, default: "Scheduled" },
+  status: { type: String },
   image: [], 
 }, { timestamps: true });
 
