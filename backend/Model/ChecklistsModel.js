@@ -21,7 +21,7 @@ const ChecklistsSchema = new mongoose.Schema({
       }
     ],
     additionalNotes: { type: String, required: true },
-    status: { type: String, required: true },
+    status: { type: String },
   }, {
     timestamps: true,
   });
