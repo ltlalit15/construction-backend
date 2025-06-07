@@ -150,6 +150,7 @@ const CalendarCreate = asyncHandler(async (req, res) => {
     endDate,
     color,
     reminders,
+    status
   } = req.body;
 
   // Parse team member IDs from form-data
@@ -225,6 +226,7 @@ const CalendarCreate = asyncHandler(async (req, res) => {
       assignTeamMembers: resolvedTeam,
       image: imageUrls,
       reminders,
+      status,
       color,
     });
 
@@ -343,6 +345,7 @@ const AllCalendar = async (req, res) => {
         endDate,
         color,
         reminders,
+        status
       } = req.body;
   
       // Parse team member IDs from form-data
@@ -426,6 +429,7 @@ const AllCalendar = async (req, res) => {
       calendarEntry.assignTeamMembers = resolvedTeam;
       calendarEntry.reminders = finalReminders;
       calendarEntry.color = color;
+      calendarEntry.status = status;
       if (imageUrls.length > 0) {
         calendarEntry.image = imageUrls;
       }
