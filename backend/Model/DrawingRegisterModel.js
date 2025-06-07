@@ -25,7 +25,7 @@ const DrawingRegisterSchema = new mongoose.Schema({
   },
   status:{
     type: String,
-    required: true,
+   
   },
   image: [], 
 
