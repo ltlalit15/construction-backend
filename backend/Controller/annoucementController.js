@@ -14,7 +14,7 @@ cloudinary.config({
 
 
   const createAnnouncement = async (req, res) => {
-    const { title, startDate, EndDate, priorityLevel, message } = req.body;
+    const { title, startDate, EndDate, priorityLevel, message, status } = req.body;
   
    
     let fileUrl = ''; // Variable to store the image URL
@@ -47,6 +47,7 @@ cloudinary.config({
         EndDate,
         priorityLevel,
         message,
+        status,
         image: fileUrl,  // Save the image URL if an image was uploaded
         
       });
@@ -131,7 +132,7 @@ cloudinary.config({
 
   const updateAnnouncement = async (req, res) => {
   const { id } = req.params;
-  const { title, startDate, EndDate, priorityLevel, message } = req.body;
+  const { title, startDate, EndDate, priorityLevel, message, status } = req.body;
 
   try {
     let fileUrl;
@@ -159,6 +160,8 @@ cloudinary.config({
       EndDate,
       priorityLevel,
       message,
+      status
+
     };
 
     if (fileUrl) {
