@@ -27,7 +27,8 @@ const createSafetyEquipmentAssignment = async (req, res) => {
     equipmentConditionRemarks,
     confirmation,
     employeeSignature,
-    supervisorSignature
+    supervisorSignature,
+    status
   } = req.body;
 
   try {
@@ -55,7 +56,8 @@ const createSafetyEquipmentAssignment = async (req, res) => {
       equipmentConditionRemarks,
       confirmation,
       employeeSignature,
-      supervisorSignature
+      supervisorSignature,
+      status
     });
 
     const savedAssignment = await newAssignment.save();
