@@ -6,9 +6,9 @@ const mongoose = require("mongoose");
 
 
 const DiariesCreate = asyncHandler(async (req, res) => {
-  const { date, projectName, supervisorName, weather, workPerformed, issuesDelays } = req.body;
+  const { date, projectName, supervisorName, weather, workPerformed, issuesDelays, status } = req.body;
 
-  if (!date || !projectName || !supervisorName || !weather || !workPerformed || !issuesDelays) {
+  if (!date || !projectName || !supervisorName || !weather || !workPerformed || !issuesDelays || !status) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -30,6 +30,7 @@ const DiariesCreate = asyncHandler(async (req, res) => {
     weather,
     workPerformed,
     issuesDelays,
+    status
   });
 
   res.status(201).json(newDiaries);
@@ -78,7 +79,8 @@ const DiariesCreate = asyncHandler(async (req, res) => {
       'supervisorName',
       'weather',
       'workPerformed',
-      'issuesDelays'
+      'issuesDelays',
+      'status'
     ];
     const updateData = {};
     allowedFields.forEach(field => {
