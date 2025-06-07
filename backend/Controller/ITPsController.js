@@ -23,7 +23,8 @@ const ITPcCreate = asyncHandler(async (req, res) => {
     stepDescription,
     qualityStatus,
     reviewerAssignment,
-    reviewerComments
+    reviewerComments,
+    status,
   } = req.body;
 
   try {
@@ -79,6 +80,7 @@ const ITPcCreate = asyncHandler(async (req, res) => {
       qualityStatus,
       reviewerAssignment,
       reviewerComments,
+      status,
       image: imageUrls,
     });
 
@@ -180,7 +182,8 @@ const UpdateITPc = asyncHandler(async (req, res) => {
     stepDescription,
     qualityStatus,
     reviewerAssignment,
-    reviewerComments
+    reviewerComments,
+    status
   } = req.body;
 
   try {
@@ -241,6 +244,7 @@ const UpdateITPc = asyncHandler(async (req, res) => {
     existingITP.qualityStatus = qualityStatus;
     existingITP.reviewerAssignment = reviewerAssignment;
     existingITP.reviewerComments = reviewerComments;
+    existingITP.status = status;
     existingITP.image = imageUrls;
 
     await existingITP.save();
