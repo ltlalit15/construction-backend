@@ -74,7 +74,8 @@ const safetyEquipmentAssignmentSchema = new mongoose.Schema({
   supervisorSignature: {
     type: String,
     required: false
-  }
+  },
+  status: {type: String},
 }, { timestamps: true });
 
 
