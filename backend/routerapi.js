@@ -102,6 +102,8 @@ routerapi.use('/api/safetydashbaord', require('./Router/safetyDashboardRouter'))
 
 routerapi.use('/api/alertsNotification', require('./Router/alertsNotificationRouter'));
 
+routerapi.use('/api/formTemplate', require('./Router/formTemplateRouter'));
+
 // <<<<<<< HEAD
 // // // Superadmin 
 // UserInfo
