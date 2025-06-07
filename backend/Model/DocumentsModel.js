@@ -6,7 +6,7 @@ const DocumentsSchema = new mongoose.Schema({
     documentType: { type: String, required: true },
     assignTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     dueDate: { type: Date, required: true },
-     status: { type: String, required: true },
+     status: { type: String },
     comments: { type: String, required: true },
     image: [],
   }, {
