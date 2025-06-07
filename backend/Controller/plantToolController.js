@@ -4,9 +4,9 @@ const Category = require("../Model/categoryModel");
 
 // CREATE
 const createPlantTool = asyncHandler(async (req, res) => {
-  const { toolId, toolName, manufacturer, category, purchaseDate, condition, notes, location } = req.body;
+  const { toolId, toolName, manufacturer, category, purchaseDate, condition, notes, location, status } = req.body;
 
-  if (!toolId || !toolName || !manufacturer || !category || !purchaseDate || !condition || !location) {
+  if (!toolId || !toolName || !manufacturer || !category || !purchaseDate || !condition || !location || !status) {
     return res.status(400).json({ success: false, message: "All required fields must be provided" });
   }
 
@@ -24,7 +24,8 @@ const createPlantTool = asyncHandler(async (req, res) => {
     purchaseDate,
     condition,
     notes,
-    location
+    location,
+    status
   });
 
   res.status(201).json({ success: true, message: "Tool created successfully", tool });
