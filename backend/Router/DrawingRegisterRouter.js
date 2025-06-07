@@ -1,5 +1,5 @@
 const express = require('express');
-const { DrawingRegisterCreate, AllDrawingRegister, SingleDrawingRegister, deleteDrawingRegister, UpdateDrawingRegister, } = require('../Controller/DrawingRegisterController');
+const { DrawingRegisterCreate, AllDrawingRegister, SingleDrawingRegister, deleteDrawingRegister, UpdateDrawingRegister } = require('../Controller/DrawingRegisterController');
 
 const router = express.Router();
 
