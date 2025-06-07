@@ -19,6 +19,7 @@ const plantAuditReportSchema = new mongoose.Schema({
   odometerReading: { type: String },
   nextServiceDue: { type: Date },
   checklist: [checklistItemSchema],
+   status: {type: String},
   image: [],  // Array of image URLs saved under "image"
   operatorSignature: { type: String }, // optional signature data or URL
  
