@@ -15,7 +15,8 @@ const plantToolSchema = new mongoose.Schema({
     required: true
   },
   notes: { type: String },
-  location: { type: String, required: true }
+  location: { type: String, required: true },
+  status: {type: String},
 }, { timestamps: true });
 
 
