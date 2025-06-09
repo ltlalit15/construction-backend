@@ -18,6 +18,10 @@ const createFormTemplate = asyncHandler(async (req, res) => {
           value: option.value
         }));
       }
+      // Ensure optional fields are well defined
+      field.required = field.required || false;
+      field.visible = field.visible || true;
+
     });
 
     const newFormTemplate = new FormTemplate({
@@ -114,6 +118,9 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
           value: option.value
         }));
       }
+       // Ensure optional fields are defined
+      field.required = field.required || false;
+      field.visible = field.visible !== undefined ? field.visible : true;
     });
 
     // Update the fields if provided, otherwise retain the existing ones
