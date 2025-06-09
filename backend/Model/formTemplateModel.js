@@ -23,6 +23,12 @@ const FieldSchema = new mongoose.Schema({
   },
   order: { type: Number },
   visible: { type: Boolean },
+  // ✅ New Fields
+  optionSource: {
+    type: String,
+    enum: ['worker', 'equipment', 'department', 'custom'],
+  },
+  page: { type: String },
 });
 
 const FormTemplateSchema = new mongoose.Schema({
