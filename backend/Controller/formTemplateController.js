@@ -5,7 +5,7 @@ const asyncHandler = require('express-async-handler');
 const createFormTemplate = asyncHandler(async (req, res) => {
   const { formName, description, fields, type } = req.body;
 
-  if (!formName || !fields || fields.length === 0 || type) {
+  if (!formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
@@ -99,7 +99,7 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
   const { id } = req.params;  // Extract the form template ID from the URL parameter
   const { formName, description, fields, type } = req.body;  // Extract the data to update from the body
 
-  if (!formName || !fields || fields.length === 0 || type) {
+  if (!formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
