@@ -64,7 +64,10 @@ const createFormTemplate = asyncHandler(async (req, res) => {
 // Get all form templates
 const getFormTemplates = asyncHandler(async (req, res) => {
   try {
-    const formTemplates = await FormTemplate.find();
+    // Fetch all form templates and populate the 'createdBy' field with 'firstName' and 'lastName'
+    const formTemplates = await FormTemplate.find()
+      .populate('fields.createdBy', 'firstName lastName'); // Populate createdBy with firstName and lastName
+
     res.status(200).json({
       success: true,
       data: formTemplates
@@ -84,7 +87,10 @@ const getFormTemplateById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   try {
-    const formTemplate = await FormTemplate.findById(id);
+    // Fetch the form template by ID and populate the 'createdBy' field with 'firstName' and 'lastName'
+    const formTemplate = await FormTemplate.findById(id)
+      .populate('fields.createdBy', 'firstName lastName'); // Populate createdBy with firstName and lastName
+
     if (!formTemplate) {
       return res.status(404).json({ success: false, message: "Form template not found" });
     }
