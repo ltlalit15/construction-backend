@@ -27,6 +27,7 @@ const createFormTemplate = asyncHandler(async (req, res) => {
     const newFormTemplate = new FormTemplate({
       formName,
       description,
+      type,
       fields
     });
 
@@ -127,6 +128,7 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
     formTemplate.formName = formName || formTemplate.formName;
     formTemplate.description = description || formTemplate.description;
     formTemplate.fields = fields || formTemplate.fields;
+    formTemplate.type = type || formTemplate.type; 
 
     // Save the updated form template
     const updatedTemplate = await formTemplate.save();  // Ensure save() is used
