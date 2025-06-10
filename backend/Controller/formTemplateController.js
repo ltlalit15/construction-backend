@@ -1,5 +1,5 @@
 const FormTemplate = require('../Model/formTemplateModel');
-const User = require('../Model/User');
+const User = require("../Model/userModel");
 const asyncHandler = require('express-async-handler');
 
 // Create a new form template
