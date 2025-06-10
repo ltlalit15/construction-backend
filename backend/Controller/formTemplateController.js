@@ -118,23 +118,25 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
     if (!formTemplate) {
       return res.status(404).json({ success: false, message: "Form template not found" });
     }
+
     // Fetch user details from the User model
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Process options to ensure it's populated as an array
+    // Process each field and add the createdBy (userId) to each field
     fields.forEach(field => {
+      field.createdBy = userId;  // Add createdBy to each field
+
       if (field.type === 'select' && field.options) {
         field.options = field.options.map(option => ({
           label: option.label,
           value: option.value
         }));
       }
-       // Ensure optional fields are defined
       field.required = field.required || false;
-      field.visible = field.visible !== undefined ? field.visible : true;
+      field.visible = field.visible || true;
     });
 
     // Update the fields if provided, otherwise retain the existing ones
@@ -144,11 +146,11 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
     formTemplate.type = type || formTemplate.type; 
 
     // Save the updated form template
-    const updatedTemplate = await formTemplate.save();  // Ensure save() is used
+    const updatedTemplate = await formTemplate.save();
 
     // Populate options properly in the response
     const populatedTemplate = await FormTemplate.findById(updatedTemplate._id)
-                                               .populate('fields.options');  // Ensure options are included in the response
+                                               .populate('fields.options');
 
     // Send back the updated template as the response
     res.status(200).json({
