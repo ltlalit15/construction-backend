@@ -34,6 +34,7 @@ const FieldSchema = new mongoose.Schema({
 const FormTemplateSchema = new mongoose.Schema({
   formName: { type: String, required: true },
   description: { type: String },
+   type: {type: String},
   fields: [FieldSchema],
 }, { timestamps: true });
 
