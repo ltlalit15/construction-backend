@@ -104,6 +104,8 @@ routerapi.use('/api/alertsNotification', require('./Router/alertsNotificationRou
 
 routerapi.use('/api/formTemplate', require('./Router/formTemplateRouter'));
 
+routerapi.use('/api/formResponse', require('./Router/formResponseRouter'));
+
 // <<<<<<< HEAD
 // // // Superadmin 
 // UserInfo
