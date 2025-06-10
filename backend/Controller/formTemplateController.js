@@ -1,15 +1,21 @@
 const FormTemplate = require('../Model/formTemplateModel');
+const User = require('../Model/User');
 const asyncHandler = require('express-async-handler');
 
 // Create a new form template
 const createFormTemplate = asyncHandler(async (req, res) => {
-  const { formName, description, fields, type } = req.body;
+  const { formName, description, fields, type, userId } = req.body;
 
   if (!formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
   try {
+     // Fetch user details from the User model
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
     // Process options to ensure it's populated as an array
     fields.forEach(field => {
       if (field.type === 'select' && field.options) {
@@ -97,7 +103,7 @@ const getFormTemplateById = asyncHandler(async (req, res) => {
 // Update a form template by ID
 const updateFormTemplate = asyncHandler(async (req, res) => {
   const { id } = req.params;  // Extract the form template ID from the URL parameter
-  const { formName, description, fields, type } = req.body;  // Extract the data to update from the body
+  const { formName, description, fields, type, userId } = req.body;  // Extract the data to update from the body
 
   if (!formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
@@ -109,6 +115,11 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
 
     if (!formTemplate) {
       return res.status(404).json({ success: false, message: "Form template not found" });
+    }
+    // Fetch user details from the User model
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     // Process options to ensure it's populated as an array
