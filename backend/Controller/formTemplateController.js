@@ -1,16 +1,25 @@
 const FormTemplate = require('../Model/formTemplateModel');
+const Projects = require('../Model/projectsModel');
 const User = require("../Model/userModel");
 const asyncHandler = require('express-async-handler');
 
 // Create a new form template
 const createFormTemplate = asyncHandler(async (req, res) => {
-  const { formName, description, fields, type, userId } = req.body;
+  const { projectId, formName, description, fields, type, userId } = req.body;
 
-  if (!formName || !fields || fields.length === 0) {
+  if (!projectId || !formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
   try {
+
+     const project = await Projects.findById(projectId);
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      message: "Project not found"
+    });
+  }
     // Fetch user details from the User model
     const user = await User.findById(userId);
     if (!user) {
@@ -20,6 +29,7 @@ const createFormTemplate = asyncHandler(async (req, res) => {
     // Process each field and add the createdBy (userId) to each field
     fields.forEach(field => {
       field.createdBy = userId;  // Add createdBy to each field
+      field.projectId = projectId;
 
       if (field.type === 'select' && field.options) {
         field.options = field.options.map(option => ({
@@ -33,6 +43,7 @@ const createFormTemplate = asyncHandler(async (req, res) => {
 
     // Create a new form template
     const newFormTemplate = new FormTemplate({
+      projectId,
       formName,
       description,
       type,
