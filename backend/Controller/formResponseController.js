@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const FormResponse = require('../Model/formResponseModel');
+const FormTemplate = require('../Model/formTemplateModel');
 const User = require('../Model/userModel');
 const cloudinary = require('../Config/cloudinary');
 
@@ -12,13 +13,23 @@ cloudinary.config({
 
 
 const createFormResponse = asyncHandler(async (req, res) => {
-  const { formName, userId, responses } = req.body;
+  const { formId, formName, userId, responses } = req.body;
 
   // Validate presence
   if (!formName || !responses || Object.keys(responses).length === 0) {
     return res.status(400).json({
       success: false,
       message: "Form name and responses are required."
+    });
+  }
+
+
+  // Find FormTemplate by formId
+  const formTemplate = await FormTemplate.findById(formId);
+  if (!formTemplate) {
+    return res.status(404).json({
+      success: false,
+      message: "Form template not found"
     });
   }
 
@@ -65,6 +76,7 @@ const createFormResponse = asyncHandler(async (req, res) => {
   // Save form response
   try {
     const newFormResponse = new FormResponse({
+      formId,
       formName,
       submittedBy: userId,
       responses: parsedResponses,
@@ -94,7 +106,8 @@ const createFormResponse = asyncHandler(async (req, res) => {
 const getAllFormResponses = asyncHandler(async (req, res) => {
   try {
     const responses = await FormResponse.find()
-                                        .populate('submittedBy', 'firstName lastName');  // Populate firstName and lastName fields of submittedBy
+                                        .populate('submittedBy', 'firstName lastName') // Populate user fields
+                                        .populate('formId', 'formName'); // Populate form name from FormTemplate
 
     res.status(200).json({
       success: true,
@@ -114,11 +127,12 @@ const getAllFormResponses = asyncHandler(async (req, res) => {
 
 
 const getFormResponseById = asyncHandler(async (req, res) => {
-  const { id } = req.params;  // Get ID from request parameters
+  const { id } = req.params;
 
   try {
     const response = await FormResponse.findById(id)
-                                       .populate('submittedBy', 'firstName lastName');  // Populate firstName and lastName fields
+                                       .populate('submittedBy', 'firstName lastName') // Populate user fields
+                                       .populate('formId', 'formName'); // Populate form name from FormTemplate
 
     if (!response) {
       return res.status(404).json({
@@ -146,13 +160,22 @@ const getFormResponseById = asyncHandler(async (req, res) => {
 
 
 const updateFormResponse = asyncHandler(async (req, res) => {
-  const { id } = req.params;  // Get ID from request parameters
-  const { formName, userId, responses } = req.body;
+  const { id } = req.params;
+  const { formId, formName, userId, responses } = req.body;
 
-  if (!formName || !responses || Object.keys(responses).length === 0) {
+  if (!formId || !formName || !responses || Object.keys(responses).length === 0) {
     return res.status(400).json({
       success: false,
-      message: "Form name and responses are required."
+      message: "Form ID, form name, and responses are required."
+    });
+  }
+
+  // Find FormTemplate by formId
+  const formTemplate = await FormTemplate.findById(formId);
+  if (!formTemplate) {
+    return res.status(404).json({
+      success: false,
+      message: "Form template not found"
     });
   }
 
@@ -167,14 +190,13 @@ const updateFormResponse = asyncHandler(async (req, res) => {
   if (req.files && req.files.image) {
     const imageFiles = Array.isArray(req.files.image) ? req.files.image : [req.files.image];
 
-    // Upload each image to Cloudinary
     for (const file of imageFiles) {
       const uploaded = await cloudinary.uploader.upload(file.tempFilePath, {
-        folder: "rfis",  // Folder name in Cloudinary
+        folder: "rfis",
         resource_type: "image"
       });
       if (uploaded.secure_url) {
-        imageUrls.push(uploaded.secure_url);  // Push the image URL into the array
+        imageUrls.push(uploaded.secure_url);
       }
     }
   }
@@ -183,7 +205,7 @@ const updateFormResponse = asyncHandler(async (req, res) => {
   let parsedResponses;
   if (typeof responses === 'string') {
     try {
-      parsedResponses = JSON.parse(responses);  // Try to parse the string to an object
+      parsedResponses = JSON.parse(responses);
     } catch (error) {
       return res.status(400).json({
         success: false,
@@ -191,17 +213,16 @@ const updateFormResponse = asyncHandler(async (req, res) => {
       });
     }
   } else {
-    parsedResponses = responses;  // Keep it as it is if it's already an object
+    parsedResponses = responses;
   }
 
   // Update the form response
   try {
     const updatedResponse = await FormResponse.findByIdAndUpdate(
       id,
-      { formName, submittedBy: userId, responses: parsedResponses, image: imageUrls },
-      { new: true }  // Return the updated document
-    )
-    .populate('submittedBy', 'firstName lastName');  // Populate firstName and lastName fields
+      { formId, formName, submittedBy: userId, responses: parsedResponses, image: imageUrls },
+      { new: true }
+    );
 
     if (!updatedResponse) {
       return res.status(404).json({
