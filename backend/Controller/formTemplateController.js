@@ -13,7 +13,7 @@ const createFormTemplate = asyncHandler(async (req, res) => {
 
   try {
 
-    const project = await Projects.findById(projectId);
+  const project = await Projects.findById(projectId);
   if (!project) {
     return res.status(404).json({
       success: false,
