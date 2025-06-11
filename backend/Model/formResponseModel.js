@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const formResponseSchema = new mongoose.Schema({
+  projectId: {type: mongoose.Schema.Types.ObjectId, ref: 'Projects'},
   formId: {type: mongoose.Schema.Types.ObjectId, ref: 'FormTemplate'},
   formName: { type: String, required: true },
   submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // Reference to User
