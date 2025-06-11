@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const FormResponse = require('../Model/formResponseModel');
 const FormTemplate = require('../Model/formTemplateModel');
+const Projects = require('../Model/projectsModel');
 const User = require('../Model/userModel');
 const cloudinary = require('../Config/cloudinary');
 
@@ -13,7 +14,7 @@ cloudinary.config({
 
 
 const createFormResponse = asyncHandler(async (req, res) => {
-  const { formId, formName, userId, responses } = req.body;
+  const { projectId, formId, formName, userId, responses } = req.body;
 
   // Validate presence
   if (!formName || !responses || Object.keys(responses).length === 0) {
@@ -30,6 +31,14 @@ const createFormResponse = asyncHandler(async (req, res) => {
     return res.status(404).json({
       success: false,
       message: "Form template not found"
+    });
+  }
+
+  const project = await Projects.findById(projectId);
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      message: "Project not found"
     });
   }
 
@@ -76,6 +85,7 @@ const createFormResponse = asyncHandler(async (req, res) => {
   // Save form response
   try {
     const newFormResponse = new FormResponse({
+      projectId,
       formId,
       formName,
       submittedBy: userId,
@@ -107,7 +117,8 @@ const getAllFormResponses = asyncHandler(async (req, res) => {
   try {
     const responses = await FormResponse.find()
                                         .populate('submittedBy', 'firstName lastName') // Populate user fields
-                                        .populate('formId', 'formName'); // Populate form name from FormTemplate
+                                        .populate('formId', 'formName')
+                                        .populate('projectId', 'name');
 
     res.status(200).json({
       success: true,
@@ -132,7 +143,8 @@ const getFormResponseById = asyncHandler(async (req, res) => {
   try {
     const response = await FormResponse.findById(id)
                                        .populate('submittedBy', 'firstName lastName') // Populate user fields
-                                       .populate('formId', 'formName'); // Populate form name from FormTemplate
+                                       .populate('formId', 'formName')
+                                       .populate('projectId', 'name'); 
 
     if (!response) {
       return res.status(404).json({
@@ -161,9 +173,9 @@ const getFormResponseById = asyncHandler(async (req, res) => {
 
 const updateFormResponse = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { formId, formName, userId, responses } = req.body;
+  const { projectId, formId, formName, userId, responses } = req.body;
 
-  if (!formId || !formName || !responses || Object.keys(responses).length === 0) {
+  if (!projectId || !formId || !formName || !responses || Object.keys(responses).length === 0) {
     return res.status(400).json({
       success: false,
       message: "Form ID, form name, and responses are required."
@@ -176,6 +188,14 @@ const updateFormResponse = asyncHandler(async (req, res) => {
     return res.status(404).json({
       success: false,
       message: "Form template not found"
+    });
+  }
+
+   const project = await Projects.findById(projectId);
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      message: "Project not found"
     });
   }
 
@@ -220,7 +240,7 @@ const updateFormResponse = asyncHandler(async (req, res) => {
   try {
     const updatedResponse = await FormResponse.findByIdAndUpdate(
       id,
-      { formId, formName, submittedBy: userId, responses: parsedResponses, image: imageUrls },
+      { projectId, formName, submittedBy: userId, responses: parsedResponses, image: imageUrls },
       { new: true }
     );
 
