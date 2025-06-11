@@ -13,7 +13,7 @@ const createFormTemplate = asyncHandler(async (req, res) => {
 
   try {
 
-     const project = await Projects.findById(projectId);
+    const project = await Projects.findById(projectId);
   if (!project) {
     return res.status(404).json({
       success: false,
@@ -77,7 +77,8 @@ const getFormTemplates = asyncHandler(async (req, res) => {
   try {
     // Fetch all form templates and populate the 'createdBy' field with 'firstName' and 'lastName'
     const formTemplates = await FormTemplate.find()
-      .populate('fields.createdBy', 'firstName lastName'); // Populate createdBy with firstName and lastName
+      .populate('fields.createdBy', 'firstName lastName')
+      .populate('fields.projectId', 'name');
 
     res.status(200).json({
       success: true,
@@ -100,7 +101,9 @@ const getFormTemplateById = asyncHandler(async (req, res) => {
   try {
     // Fetch the form template by ID and populate the 'createdBy' field with 'firstName' and 'lastName'
     const formTemplate = await FormTemplate.findById(id)
-      .populate('fields.createdBy', 'firstName lastName'); // Populate createdBy with firstName and lastName
+      .populate('fields.createdBy', 'firstName lastName')
+      .populate('fields.projectId', 'name');  
+       
 
     if (!formTemplate) {
       return res.status(404).json({ success: false, message: "Form template not found" });
@@ -122,9 +125,9 @@ const getFormTemplateById = asyncHandler(async (req, res) => {
 // Update a form template by ID
 const updateFormTemplate = asyncHandler(async (req, res) => {
   const { id } = req.params;  // Extract the form template ID from the URL parameter
-  const { formName, description, fields, type, userId } = req.body;  // Extract the data to update from the body
+  const { projectId, formName, description, fields, type, userId } = req.body;  // Extract the data to update from the body
 
-  if (!formName || !fields || fields.length === 0) {
+  if (!projectId, !formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
@@ -136,6 +139,14 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
       return res.status(404).json({ success: false, message: "Form template not found" });
     }
 
+      const project = await Projects.findById(projectId);
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      message: "Project not found"
+    });
+  }
+
     // Fetch user details from the User model
     const user = await User.findById(userId);
     if (!user) {
@@ -145,6 +156,7 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
     // Process each field and add the createdBy (userId) to each field
     fields.forEach(field => {
       field.createdBy = userId;  // Add createdBy to each field
+      field.projectId = projectId;
 
       if (field.type === 'select' && field.options) {
         field.options = field.options.map(option => ({
@@ -157,6 +169,7 @@ const updateFormTemplate = asyncHandler(async (req, res) => {
     });
 
     // Update the fields if provided, otherwise retain the existing ones
+    formTemplate.projectId = projectId || formTemplate.projectId;
     formTemplate.formName = formName || formTemplate.formName;
     formTemplate.description = description || formTemplate.description;
     formTemplate.fields = fields || formTemplate.fields;
