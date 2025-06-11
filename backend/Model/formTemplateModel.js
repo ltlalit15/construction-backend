@@ -37,6 +37,7 @@ const FieldSchema = new mongoose.Schema({
 });
 
 const FormTemplateSchema = new mongoose.Schema({
+  projectId: {type: mongoose.Schema.Types.ObjectId, ref: 'Projects'},
   formName: { type: String, required: true },
   description: { type: String },
    type: {type: String},
