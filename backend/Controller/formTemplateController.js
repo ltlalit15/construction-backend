@@ -94,7 +94,6 @@ const getFormTemplates = asyncHandler(async (req, res) => {
   }
 });
 
-
 // Get a single form template by ID
 const getFormTemplateById = asyncHandler(async (req, res) => {
   const { id } = req.params;
