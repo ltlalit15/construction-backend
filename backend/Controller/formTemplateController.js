@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler');
 const createFormTemplate = asyncHandler(async (req, res) => {
   const { projectId, formName, description, fields, type, userId } = req.body;
 
-  if (!projectId || !formName || !fields || fields.length === 0) {
+  if (!formName || !fields || fields.length === 0) {
     return res.status(400).json({ success: false, message: "Form name and fields are required." });
   }
 
