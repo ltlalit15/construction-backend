@@ -78,6 +78,9 @@ const getFormTemplates = asyncHandler(async (req, res) => {
     const formTemplates = await FormTemplate.find()
       .populate('fields.createdBy', 'firstName lastName')  // 'createdBy' को populate करें
       .populate('fields.projectId', 'name')  // 'projectId' को populate करें और 'name' प्राप्त करें
+
+     // Debugging: print the formTemplates to check the structure
+    console.log(formTemplates);
     
     res.status(200).json({
       success: true,
