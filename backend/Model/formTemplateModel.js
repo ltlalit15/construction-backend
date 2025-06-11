@@ -34,6 +34,10 @@ const FieldSchema = new mongoose.Schema({
     enum: ['worker', 'equipment', 'department', 'custom'],
   },
   page: { type: String },
+  projectId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Projects',  // Reference to the Projects collection
+  }
 });
 
 const FormTemplateSchema = new mongoose.Schema({
