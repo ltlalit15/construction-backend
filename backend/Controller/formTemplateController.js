@@ -105,8 +105,9 @@ const getFormTemplateById = asyncHandler(async (req, res) => {
   try {
     // Fetch the form template by ID and populate the 'createdBy' field with 'firstName' and 'lastName'
     const formTemplate = await FormTemplate.findById(id)
-      .populate('fields.createdBy', 'firstName lastName')
-      .populate('fields.projectId', 'name');  
+      .populate('fields.createdBy', 'firstName lastName _id')  // Populate 'createdBy' with firstName, lastName, and _id
+      .populate('fields.projectId', 'name')  // Populate 'fields.projectId' with name
+      .populate('projectId', 'name');  // Populate 'projectId' with name at formTemplate level
        
 
     if (!formTemplate) {
