@@ -74,17 +74,19 @@ const createFormTemplate = asyncHandler(async (req, res) => {
 
 const getFormTemplates = asyncHandler(async (req, res) => {
   try {
-    // Fetch all form templates
-    const formTemplates = await FormTemplate.find();
+    // Fetch all form templates and populate createdBy with firstName, lastName
+    const formTemplates = await FormTemplate.find()
+      .populate('fields.createdBy', 'firstName lastName _id')  // Populate 'createdBy' with firstName, lastName and _id
+      .populate('fields.projectId', 'name');  // Populate 'projectId' with name
 
-    // Loop through each form template and fetch the name for each projectId
+    // Loop through each form template to manually fetch the project name from Projects collection
     for (let formTemplate of formTemplates) {
-      // Get the projectId of the formTemplate
+      // Fetch the project from Projects collection by projectId
       const project = await Projects.findById(formTemplate.projectId);
       
-      // If the project exists, add the project name to the formTemplate as 'name'
+      // If project exists, add the project name to the formTemplate
       if (project) {
-        formTemplate.name = project.name;  // Use 'name' here instead of 'projectName'
+        formTemplate.projectName = project.name;  // Add the project name directly to the formTemplate
       }
     }
 
