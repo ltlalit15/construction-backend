@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const rfiSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   subject: { type: String, required: true },
   priority: { type: String, required: true },
   due_date: { type: Date, required: true },
