@@ -1,8 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const Swms=require("../Model/SwmsModel")
+const User = require("../Model/userModel");
 
 const SwmsCreate = asyncHandler(async (req, res) => {
   const {
+    userId,
     swmsName,
     siteAddress,
     companyName,
@@ -17,6 +19,7 @@ const SwmsCreate = asyncHandler(async (req, res) => {
 
   // Ensure all fields are present
   if (
+    !userId ||
     !swmsName ||
     !siteAddress ||
     !companyName ||
@@ -42,8 +45,18 @@ const SwmsCreate = asyncHandler(async (req, res) => {
     });
   }
 
+   // Find the user and get the first name and last name
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      status: false,
+      message: "User not found",
+    });
+  }
+
   // Create new SWMS
   const newSwms = await Swms.create({
+    userId,
     swmsName,
     siteAddress,
     companyName,
@@ -66,7 +79,9 @@ const SwmsCreate = asyncHandler(async (req, res) => {
 // GET ALL SWMS
 const AllSwms = async (req, res) => {
   try {
-    const allSwms = await Swms.find();
+    // Populate the userId field to get the user’s id, firstName, and lastName
+    const allSwms = await Swms.find()
+      .populate('userId', '_id firstName lastName'); // Populate user data with id, firstName, and lastName
 
     if (!allSwms || allSwms.length === 0) {
       return res.status(404).json({
@@ -75,10 +90,29 @@ const AllSwms = async (req, res) => {
       });
     }
 
+    // Map through all SWMS and include user details (firstName, lastName)
+    const swmsData = allSwms.map(swms => {
+      if (swms.userId) {
+        return {
+          ...swms.toObject(),
+          userId: {
+            id: swms.userId._id,           // Include _id as 'id'
+            firstName: swms.userId.firstName,
+            lastName: swms.userId.lastName,
+          }
+        };
+      } else {
+        return {
+          ...swms.toObject(),
+          userId: null,  // Handle case where userId is missing or not populated
+        };
+      }
+    });
+
     res.status(200).json({
       status: true,
       message: "Fetched SWMS successfully",
-      data: allSwms,
+      data: swmsData,
     });
   } catch (error) {
     res.status(500).json({
@@ -87,6 +121,7 @@ const AllSwms = async (req, res) => {
     });
   }
 };
+
 
 // DELETE SWMS
 const deleteSwms = async (req, res) => {
@@ -119,6 +154,7 @@ const deleteSwms = async (req, res) => {
 const UpdateSwms = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const {
+    userId,
     swmsName,
     siteAddress,
     companyName,
@@ -133,6 +169,7 @@ const UpdateSwms = asyncHandler(async (req, res) => {
 
   // Validate all required fields (same as create)
   if (
+    !userId ||
     !swmsName ||
     !siteAddress ||
     !companyName ||
@@ -157,8 +194,18 @@ const UpdateSwms = asyncHandler(async (req, res) => {
     });
   }
 
+   // Find the user by ID to get first name and last name
+  const user = await User.findById(req.body.userId);
+  if (!user) {
+    return res.status(404).json({
+      status: false,
+      message: "User not found",
+    });
+  }
+
   // Build update object with all fields
   const updateData = {
+    userId,
     swmsName,
     siteAddress,
     companyName,
@@ -203,7 +250,9 @@ const UpdateSwms = asyncHandler(async (req, res) => {
 // GET SINGLE SWMS
 const SingleSwms = async (req, res) => {
   try {
-    const singleSwms = await Swms.findById(req.params.id);
+    // Fetch the SWMS document by its ID and populate the userId field with firstName, lastName, and _id
+    const singleSwms = await Swms.findById(req.params.id)
+      .populate('userId', '_id firstName lastName');  // Populate user data (id, firstName, lastName)
 
     if (!singleSwms) {
       return res.status(404).json({
@@ -212,10 +261,18 @@ const SingleSwms = async (req, res) => {
       });
     }
 
+    // Return the SWMS with user details
     res.status(200).json({
       status: true,
       message: "Fetched SWMS successfully",
-      data: singleSwms,
+      data: {
+        ...singleSwms.toObject(),
+        userId: {  // Including the user details
+          id: singleSwms.userId._id,  // Add user _id as id
+          firstName: singleSwms.userId.firstName,
+          lastName: singleSwms.userId.lastName
+        }
+      },
     });
 
   } catch (error) {
@@ -226,7 +283,7 @@ const SingleSwms = async (req, res) => {
     });
   }
 };
-  
+
 
 
 module.exports = {SwmsCreate,AllSwms,deleteSwms,UpdateSwms,SingleSwms};
