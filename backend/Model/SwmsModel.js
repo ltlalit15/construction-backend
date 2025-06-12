@@ -3,6 +3,7 @@ const mongoose =require("mongoose")
 
 const SwmsSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     swmsName: { type: String, required: true },
     siteAddress: { type: String, required: true },
     companyName: { type: String, required: true },
