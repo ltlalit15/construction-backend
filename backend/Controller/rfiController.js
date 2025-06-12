@@ -93,28 +93,24 @@ cloudinary.config({
   // };
 
 
- const getAllRFIs = async (req, res) => {
+  const getAllRFIs = async (req, res) => {
   try {
     const rfiList = await RFI.find()
       .limit(15)
-      .sort({ createdAt: -1 })  // Sort by creation date (latest first)
-      .populate("userId", "_id firstName lastName")  // Populate userId with _id, firstName, lastName
-      .populate("assignee", "_id firstName lastName"); // Populate assignee with _id, firstName, lastName
+      .sort({ createdAt: -1 }) // latest first
+      .populate("userId", "_id firstName lastName")  
+      .populate("assignee", "_id firstName lastName"); // populate these fields
 
-    const formattedRFIList = rfiList.map(rfi => {
-      const assigneeData = rfi.assignee
+    const formattedRFIList = rfiList.map(rfi => ({
+      ...rfi._doc,
+      assignee: rfi.assignee
         ? {
             _id: rfi.assignee._id,
             firstName: rfi.assignee.firstName,
             lastName: rfi.assignee.lastName,
           }
-        : null;  // Change empty string to null if assignee is not present
-
-      return {
-        ...rfi._doc,  // Spread the RFI document
-        assignee: assigneeData,  // Add the formatted assignee data
-      };
-    });
+        : "",
+    }));
 
     res.status(200).json({
       success: true,
@@ -127,8 +123,7 @@ cloudinary.config({
       error: error.message,
     });
   }
-};
-
+}; 
 
   
 
