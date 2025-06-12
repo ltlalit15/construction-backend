@@ -93,24 +93,28 @@ cloudinary.config({
   // };
 
 
-  const getAllRFIs = async (req, res) => {
+ const getAllRFIs = async (req, res) => {
   try {
     const rfiList = await RFI.find()
       .limit(15)
-      .sort({ createdAt: -1 }) // latest first
-      .populate("userId", "_id firstName lastName")  
-      .populate("assignee", "_id firstName lastName"); // populate these fields
+      .sort({ createdAt: -1 })  // Sort by creation date (latest first)
+      .populate("userId", "_id firstName lastName")  // Populate userId with _id, firstName, lastName
+      .populate("assignee", "_id firstName lastName"); // Populate assignee with _id, firstName, lastName
 
-    const formattedRFIList = rfiList.map(rfi => ({
-      ...rfi._doc,
-      assignee: rfi.assignee
+    const formattedRFIList = rfiList.map(rfi => {
+      const assigneeData = rfi.assignee
         ? {
             _id: rfi.assignee._id,
             firstName: rfi.assignee.firstName,
             lastName: rfi.assignee.lastName,
           }
-        : "",
-    }));
+        : null;  // Change empty string to null if assignee is not present
+
+      return {
+        ...rfi._doc,  // Spread the RFI document
+        assignee: assigneeData,  // Add the formatted assignee data
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -125,36 +129,41 @@ cloudinary.config({
   }
 };
 
+
   
 
 
   const getRFIById = async (req, res) => {
-    try {
-      const rfi = await RFI.findById(req.params.id).populate('assignee', 'firstName lastName');
-  
-      if (!rfi) {
-        return res.status(404).json({
-          success: false,
-          message: "RFI not found",
-        });
-      }
-  
-      res.status(200).json({
-        success: true,
-        data: rfi,
-      });
-    } catch (error) {
-      res.status(500).json({
+  try {
+    // Populate both userId and assignee fields with _id, firstName, and lastName from the User model
+    const rfi = await RFI.findById(req.params.id)
+      .populate('userId', '_id firstName lastName')  // Populate userId with _id, firstName, lastName
+      .populate('assignee', '_id firstName lastName');  // Populate assignee with _id, firstName, lastName
+
+    if (!rfi) {
+      return res.status(404).json({
         success: false,
-        message: "Error fetching RFI",
-        error: error.message,
+        message: "RFI not found",
       });
     }
-  };
+
+    res.status(200).json({
+      success: true,
+      data: rfi,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching RFI",
+      error: error.message,
+    });
+  }
+};
+
   
 
   const updateRFI = async (req, res) => {
-    const { subject, priority, due_date, assignee, department, description, status } = req.body;
+    const { userId, subject, priority, due_date, assignee, department, description, status } = req.body;
     let imageUrl;
   
     try {
@@ -184,6 +193,7 @@ cloudinary.config({
   
       // Build update object
       const updateData = {
+        userId,
         subject,
         priority,
         due_date,
