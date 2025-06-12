@@ -15,7 +15,7 @@ cloudinary.config({
 
   // CREATE RFI
   const createRFI = async (req, res) => {
-    const { subject, priority, due_date, assignee, department, description, status } = req.body;
+    const { userId, subject, priority, due_date, assignee, department, description, status } = req.body;
     let imageUrl = "";
   
     try {
@@ -45,6 +45,7 @@ cloudinary.config({
   
       // Create and save the new RFI
       const newRFI = new RFI({
+        userId,  
         subject,
         priority,
         due_date,
@@ -97,6 +98,7 @@ cloudinary.config({
     const rfiList = await RFI.find()
       .limit(15)
       .sort({ createdAt: -1 }) // latest first
+      .populate("userId", "_id firstName lastName")  
       .populate("assignee", "_id firstName lastName"); // populate these fields
 
     const formattedRFIList = rfiList.map(rfi => ({
