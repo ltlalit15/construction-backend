@@ -40,6 +40,11 @@ router
     userController.deleteUser
   );
 
+  // Forget Password
+router.post('/forgotPassword', userController.forgotPassword);
+router.post('/resetPassword', userController.resetPassword);
+
+
 
   
 module.exports = router;
