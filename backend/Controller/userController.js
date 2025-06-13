@@ -283,7 +283,8 @@ exports.forgotPassword = async (req, res) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Reset token sent to email!'
+      message: 'Reset token sent to email!',
+      resetToken: resetToken
     });
 
   } catch (err) {
@@ -295,32 +296,35 @@ exports.forgotPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { newPassword, confirmPassword } = req.body;
+    const { token, newPassword, confirmPassword } = req.body;
 
-    // Validation check
-    if (!newPassword || !confirmPassword) {
+    if (!token || !newPassword || !confirmPassword) {
       return res.status(400).json({ status: 'fail', message: 'All fields are required.' });
     }
 
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ status: 'fail', message: 'Passwords do not match.' });
     }
-     // Email already attached in request (middleware or previous logic)
-    const email = req.user.email;
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    // Hash the token to match with DB
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user with this token and check expiration
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
 
     if (!user) {
-      return res.status(404).json({ status: 'fail', message: 'User not found.' });
+      return res.status(400).json({ status: 'fail', message: 'Token is invalid or has expired.' });
     }
 
-    // Update password & clear reset token
+    // Update password
     user.password = newPassword;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
-    await user.save(); // Password hashing automatically handled by pre('save') hook
+    await user.save();
 
     res.status(200).json({
       status: 'success',
