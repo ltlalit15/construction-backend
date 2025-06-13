@@ -295,10 +295,10 @@ exports.forgotPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { email, newPassword, confirmPassword } = req.body;
+    const { newPassword, confirmPassword } = req.body;
 
     // Validation check
-    if (!email || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       return res.status(400).json({ status: 'fail', message: 'All fields are required.' });
     }
 
