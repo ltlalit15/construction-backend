@@ -305,6 +305,8 @@ exports.resetPassword = async (req, res) => {
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ status: 'fail', message: 'Passwords do not match.' });
     }
+     // Email already attached in request (middleware or previous logic)
+    const email = req.user.email;
 
     // Find user by email
     const user = await User.findOne({ email });
