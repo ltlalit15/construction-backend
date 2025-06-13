@@ -1,6 +1,6 @@
 const User  = require('../Model/userModel');
-
-
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const cloudinary = require('../Config/cloudinary');
 
 cloudinary.config({
@@ -220,5 +220,116 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+
+
+
+// ✅ Email Function
+const sendEmail = async (options) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'packageitappofficially@gmail.com',
+      pass: 'epvuqqesdioohjvi'
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  const mailOptions = {
+    from: 'sagarkher1999@gmail.com',
+    to: options.email,
+    subject: options.subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; font-size: 15px; color: #333;">
+        <h2>Password Reset Request</h2>
+        <p>Hi,</p>
+        <p>We received a request to reset your password. Please click the button below to reset your password:</p>
+        <a href="https://construction-mngmt.netlify.app/resetpassword?token=${options.resetToken}" 
+           style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">
+          Reset Password
+        </a>
+        <p>If you did not request this, you can safely ignore this email.</p>
+        <p>This link will expire in 10 minutes for security reasons.</p>
+        <br>
+        <p>Regards,<br>PackageIt Team</p>
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+
+
+// Forgot Password Controller
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'User not found with this email' });
+    }
+
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    await sendEmail({
+      email: user.email,
+      subject: 'Reset Your Password',
+      resetToken: resetToken
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset token sent to email!'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 'error', message: 'There was an error sending email.' });
+  }
+};
+
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    // Validation check
+    if (!email || !newPassword || !confirmPassword) {
+      return res.status(400).json({ status: 'fail', message: 'All fields are required.' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ status: 'fail', message: 'Passwords do not match.' });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'User not found.' });
+    }
+
+    // Update password & clear reset token
+    user.password = newPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save(); // Password hashing automatically handled by pre('save') hook
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password reset successfully.'
+    });
+
+  } catch (err) {
+    console.error('Error resetting password:', err);
+    res.status(500).json({ status: 'error', message: 'Internal server error.' });
+  }
+};
+
 
 
